@@ -32,28 +32,47 @@ Restart Home Assistant and enjoy!
 
 #### Remote mpv
 
-It is also possible to connect to a remove mpv instance over the network. First, ensure that `socat` is installed, and
-create a script that runs socat to expose the mpv socket on a network port (2352 in the following example). It is
-important that this script has the extension `.run`, and is executable (run `chmod +x socat.run`):
+It is also possible to connect to a remote mpv instance over the network. For security reasons, it's strongly recommended to use SSH tunneling to create an encrypted connection rather than exposing the socket directly over the network. Directly exposing the mpv control socket is a security risk, as it would allow anybody with access to the port to execute arbitrary commands via mpv's `run` command.
+
+First, ensure that `socat` is installed. Then create a script that:
+1. Starts a local TCP listener that connects to the mpv socket
+2. Creates an SSH tunnel to securely expose this listener to your Home Assistant machine
+
+Example secure connection script (save as `secure-mpv-tunnel.sh` and make executable with `chmod +x`):
 ```sh
-#!/bin/sh
-exec socat TCP-LISTEN:2352,fork UNIX-CONNECT:/path/to/mpv-socket
+#!/bin/bash
+# Replace these values with your actual settings
+MPV_SOCKET="/path/to/mpv-socket"
+LOCAL_PORT="2352"
+REMOTE_HOST="homeassistant.local"  # Your Home Assistant machine
+REMOTE_USER="user"                 # SSH user on your Home Assistant machine
+
+# Kill all background processes when script terminates
+trap "kill 0" SIGINT SIGTERM EXIT
+
+# Create local TCP listener that connects to mpv socket
+socat TCP-LISTEN:${LOCAL_PORT},reuseaddr,fork UNIX-CONNECT:${MPV_SOCKET} &
+
+# Create secure SSH tunnel
+ssh -N -R ${LOCAL_PORT}:localhost:${LOCAL_PORT} ${REMOTE_USER}@${REMOTE_HOST}
 ```
 
-Start mpv with using the `--script` option to have it run the script on startup:
+Start mpv with the `--script` option to run the script on startup:
 ```sh
-mpv --input-ipc-server=/path/to/mpv-socket --script=/path/to/socat.run
+mpv --input-ipc-server=/path/to/mpv-socket --script=/path/to/secure-mpv-tunnel.sh
 ```
 
-Finaly, configure the integration to connect over the network:
+Finally, configure the integration to connect to the local end of the tunnel:
 ```yaml
 media_player:
   - platform: mpv
     name: "MPV Player"
     server:
-      host: 192.168.1.100
+      host: localhost
       port: 2352
 ```
+
+This approach ensures all communication between Home Assistant and mpv is encrypted through SSH, preventing unauthorized access to your mpv instance.
 
 #### Other useful mpv options
 
