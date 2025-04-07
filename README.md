@@ -34,7 +34,11 @@ Restart Home Assistant and enjoy!
 
 It is also possible to connect to a remote mpv instance over the network. For security reasons, it's strongly recommended to use SSH tunneling to create an encrypted connection rather than exposing the socket directly over the network. Directly exposing the mpv control socket is a security risk, as it would allow anybody with access to the port to execute arbitrary commands via mpv's `run` command.
 
-First, ensure that `socat` is installed, and create a script that runs socat with an SSH tunnel to securely expose the mpv socket (port 2352 in the following example). It is important that this script has the extension `.run`, and is executable (run `chmod +x secure-mpv-tunnel.run`):
+First, ensure that `socat` is installed, and create a script that:
+1. Uses socat to bridge the mpv Unix socket to a localhost-only port on your machine
+2. Creates an SSH reverse tunnel to securely forward that port to your Home Assistant server
+
+The script must have the `.run` extension and be executable (run `chmod +x secure-mpv-tunnel.run`):
 ```sh
 #!/bin/bash
 # Replace these values with your actual settings
@@ -43,8 +47,8 @@ LOCAL_PORT="2352"
 HA_HOST="homeassistant.local"  # Your Home Assistant machine
 HA_USER="user"                 # SSH user on your Home Assistant machine
 
-# Create local TCP listener that connects to mpv socket
-socat TCP-LISTEN:${LOCAL_PORT},reuseaddr,fork UNIX-CONNECT:${MPV_SOCKET} &
+# Create localhost-only TCP listener that connects to mpv socket
+socat TCP-LISTEN:${LOCAL_PORT},bind=127.0.0.1,reuseaddr,fork UNIX-CONNECT:${MPV_SOCKET} &
 
 # Create secure SSH tunnel
 ssh -N -R ${LOCAL_PORT}:localhost:${LOCAL_PORT} ${HA_USER}@${HA_HOST}
