@@ -50,7 +50,7 @@ socat TCP-LISTEN:${LOCAL_PORT},reuseaddr,fork UNIX-CONNECT:${MPV_SOCKET} &
 ssh -N -R ${LOCAL_PORT}:localhost:${LOCAL_PORT} ${HA_USER}@${HA_HOST}
 ```
 
-> **Note:** If using the [Home Assistant SSH addon](https://github.com/hassio-addons/addon-ssh), you'll need to enable `allow_remote_port_forwarding: true` in its configuration.
+> **Note:** This method requires SSH access to your Home Assistant instance. If using the popular [Home Assistant SSH addon](https://github.com/hassio-addons/addon-ssh), you'll need to enable `allow_remote_port_forwarding: true` in its configuration for the reverse tunnel to work.
 
 Start mpv with the `--script` option to run the script on startup:
 ```sh
