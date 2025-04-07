@@ -47,6 +47,12 @@ LOCAL_PORT="2352"
 HA_HOST="homeassistant.local"  # Your Home Assistant machine
 HA_USER="user"                 # SSH user on your Home Assistant machine
 
+# Exit if port already in use (script likely already running)
+if nc -z 127.0.0.1 ${LOCAL_PORT} 2>/dev/null; then
+  echo "Port ${LOCAL_PORT} already in use, assuming secure-mpv-tunnel script is already running"
+  exit 0
+fi
+
 # Create localhost-only TCP listener that connects to mpv socket
 socat TCP-LISTEN:${LOCAL_PORT},bind=127.0.0.1,reuseaddr,fork UNIX-CONNECT:${MPV_SOCKET} &
 
