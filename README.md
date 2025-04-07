@@ -40,14 +40,14 @@ First, ensure that `socat` is installed, and create a script that runs socat wit
 # Replace these values with your actual settings
 MPV_SOCKET="/path/to/mpv-socket"
 LOCAL_PORT="2352"
-REMOTE_HOST="homeassistant.local"  # Your Home Assistant machine
-REMOTE_USER="user"                 # SSH user on your Home Assistant machine
+HA_HOST="homeassistant.local"  # Your Home Assistant machine
+HA_USER="user"                 # SSH user on your Home Assistant machine
 
 # Create local TCP listener that connects to mpv socket
 socat TCP-LISTEN:${LOCAL_PORT},reuseaddr,fork UNIX-CONNECT:${MPV_SOCKET} &
 
 # Create secure SSH tunnel
-ssh -N -R ${LOCAL_PORT}:localhost:${LOCAL_PORT} ${REMOTE_USER}@${REMOTE_HOST}
+ssh -N -R ${LOCAL_PORT}:localhost:${LOCAL_PORT} ${HA_USER}@${HA_HOST}
 ```
 
 Start mpv with the `--script` option to run the script on startup:
