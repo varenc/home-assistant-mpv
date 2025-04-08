@@ -57,14 +57,14 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 })
 
 
-def setup_platform(
+async def async_setup_platform(
     hass: HomeAssistant,
     config: ConfigType,
-    add_entities: AddEntitiesCallback,
+    async_add_entities: AddEntitiesCallback,
     discovery_info: DiscoveryInfoType | None = None
 ) -> None:
     server = config[CONF_SERVER]
-    add_entities([
+    async_add_entities([
         MpvEntity(
             name=config[CONF_NAME],
             host=server.get(CONF_HOST),
@@ -83,6 +83,24 @@ def setup_platform(
         },
         "async_run_command"
     )
+
+def setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    add_entities: AddEntitiesCallback,
+    discovery_info: DiscoveryInfoType | None = None
+) -> None:
+    """Set up the MPV platform."""
+    server = config[CONF_SERVER]
+    add_entities([
+        MpvEntity(
+            name=config[CONF_NAME],
+            host=server.get(CONF_HOST),
+            port=server.get(CONF_PORT),
+            socket=server.get(CONF_PATH),
+            proxy_media=config[CONF_PROXY_MEDIA]
+        )
+    ])
 
 
 class MpvEntity(MediaPlayerEntity):
