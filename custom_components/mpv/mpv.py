@@ -140,6 +140,31 @@ class MPVConnection:
             response_value = await self._request_futures[request_id]
             del self._request_futures[request_id]
             return response_value
+            
+    async def command_string(self, command_string: str, response: bool = False) -> dict[str, Any] | None:
+        """Send a raw command string to MPV.
+        
+        This is useful for complex commands that include quoted strings or
+        other parameters that shouldn't be split automatically.
+        """
+        if not self.is_connected():
+            raise MPVConnectionException('Not connected')
+            
+        # Parse the command string into JSON using shlex to handle quotes properly
+        import shlex
+        try:
+            # Attempt to safely split the string preserving quoted parts
+            parts = shlex.split(command_string)
+            if not parts:
+                raise ValueError("Empty command")
+                
+            command = parts[0]
+            params = parts[1:] if len(parts) > 1 else []
+            
+            return await self.command(command, *params, response=response)
+        except ValueError as ex:
+            _logger.error('Failed to parse command string: %s', ex)
+            raise MPVConnectionException(f"Invalid command format: {ex}") from ex
 
 
 class MPVCommand(enum.StrEnum):
@@ -196,6 +221,10 @@ class MPV:
 
     async def command(self, command: str, *params: Any) -> None:
         await self.connection.command(command, *params)
+        
+    async def command_string(self, command_string: str) -> None:
+        """Execute a raw command string with proper handling of quotes and spaces."""
+        await self.connection.command_string(command_string)
 
     async def get_property(self, name: str) -> None:
         response = await self.connection.command('get_property', name, response=True)

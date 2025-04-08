@@ -10,7 +10,7 @@ run_command:
   fields:
     command_string:
       name: Command String
-      description: Complete MPV command string including parameters (e.g. "seek 30 absolute", "set fullscreen yes").
+      description: Complete MPV command string including parameters (e.g. "seek 30 absolute", "set fullscreen yes", "show-text \"Hello world\" 5000").
       required: true
       example: "set fullscreen yes"
       selector:

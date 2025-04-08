@@ -329,16 +329,12 @@ class MpvEntity(MediaPlayerEntity):
     async def async_run_command(self, command_string: str) -> None:
         """Run an arbitrary MPV command.
         
-        The command_string is a space-separated string containing the command 
-        and its parameters, e.g., 'set fullscreen yes' or 'seek 30 absolute'.
+        The command_string is the complete command with all parameters, e.g.,
+        'set fullscreen yes', 'seek 30 absolute', or 'show-text "Hello there" 5000'.
+        Quotes are preserved for string arguments.
         """
         try:
-            # Split the command string into command and parameters
-            parts = command_string.split()
-            command = parts[0] if parts else ""
-            params = parts[1:] if len(parts) > 1 else []
-            
-            _logger.debug(f"Running MPV command: '{command}' with params: {params}")
-            await self._mpv.command(command, *params)
+            _logger.debug(f"Running MPV command string: '{command_string}'")
+            await self._mpv.command_string(command_string)
         except Exception as ex:
             _logger.error(f"Failed to run MPV command '{command_string}': {ex}")
