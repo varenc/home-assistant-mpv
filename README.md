@@ -41,19 +41,19 @@ service: mpv.run_command
 target:
   entity_id: media_player.mpv_player
 data:
-  command: "seek"
-  params:
-    - "10"
-    - "relative"
+  command_string: "seek 10 relative"
 ```
 
 This would seek forward 10 seconds in the currently playing media.
 
 Example common commands:
-- `seek`: Navigate to a position (`seek 30 absolute` to go to 30 seconds)
-- `loadfile`: Play a file (equivalent to play_media)
-- `playlist-next`/`playlist-prev`: Navigate playlist
-- `set_property`: Set any mpv property like `set_property fullscreen yes`
+- `seek 30 absolute`: Navigate to the 30-second position
+- `seek 10 relative`: Skip forward 10 seconds
+- `loadfile /path/to/movie.mp4`: Play a specific file
+- `playlist-next`: Go to next item in playlist
+- `playlist-prev`: Go to previous item in playlist
+- `set fullscreen yes`: Enable fullscreen mode
+- `set volume 75`: Set volume to 75%
 
 For a complete list of available commands, refer to the [mpv JSON IPC documentation][mpv-ipc].
 

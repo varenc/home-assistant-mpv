@@ -8,17 +8,10 @@ run_command:
       integration: mpv
       domain: media_player
   fields:
-    command:
-      name: Command
-      description: MPV command to run (e.g. "playlist-next", "seek", "loadfile").
+    command_string:
+      name: Command String
+      description: Complete MPV command string including parameters (e.g. "seek 30 absolute", "set fullscreen yes").
       required: true
-      example: "playlist-next"
+      example: "set fullscreen yes"
       selector:
         text:
-    params:
-      name: Parameters
-      description: Optional list of parameters to pass to the command.
-      required: false
-      example: "['10', 'absolute']"
-      selector:
-        object:

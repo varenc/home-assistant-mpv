@@ -78,8 +78,7 @@ async def async_setup_platform(
     platform.async_register_entity_service(
         "run_command",
         {
-            vol.Required("command"): cv.string,
-            vol.Optional("params"): vol.All(cv.ensure_list, [cv.string]),
+            vol.Required("command_string"): cv.string,
         },
         "async_run_command"
     )
@@ -327,12 +326,19 @@ class MpvEntity(MediaPlayerEntity):
         await self._mpv.set_property(MPVProperty.LOOP_FILE, repeat == RepeatMode.ONE)
         await self._mpv.set_property(MPVProperty.LOOP_PLAYLIST, repeat == RepeatMode.ALL)
         
-    async def async_run_command(self, command: str, params: list[str] = None) -> None:
-        """Run an arbitrary MPV command."""
-        if params is None:
-            params = []
+    async def async_run_command(self, command_string: str) -> None:
+        """Run an arbitrary MPV command.
+        
+        The command_string is a space-separated string containing the command 
+        and its parameters, e.g., 'set fullscreen yes' or 'seek 30 absolute'.
+        """
         try:
-            _logger.debug(f"Running MPV command: {command} with params: {params}")
+            # Split the command string into command and parameters
+            parts = command_string.split()
+            command = parts[0] if parts else ""
+            params = parts[1:] if len(parts) > 1 else []
+            
+            _logger.debug(f"Running MPV command: '{command}' with params: {params}")
             await self._mpv.command(command, *params)
         except Exception as ex:
-            _logger.error(f"Failed to run MPV command {command}: {ex}")
+            _logger.error(f"Failed to run MPV command '{command_string}': {ex}")
