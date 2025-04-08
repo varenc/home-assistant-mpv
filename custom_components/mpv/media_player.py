@@ -23,7 +23,7 @@ from homeassistant.components.media_player.browse_media import (
 )
 from homeassistant.const import CONF_NAME, CONF_HOST, CONF_PATH, CONF_PORT
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddEntitiesCallback, async_get_current_platform
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import dt
@@ -73,6 +73,16 @@ def setup_platform(
             proxy_media=config[CONF_PROXY_MEDIA]
         )
     ])
+    
+    platform = async_get_current_platform()
+    platform.async_register_entity_service(
+        "run_command",
+        {
+            vol.Required("command"): cv.string,
+            vol.Optional("params"): vol.All(cv.ensure_list, [cv.string]),
+        },
+        "async_run_command"
+    )
 
 
 class MpvEntity(MediaPlayerEntity):
@@ -298,3 +308,13 @@ class MpvEntity(MediaPlayerEntity):
     async def async_set_repeat(self, repeat: RepeatMode) -> None:
         await self._mpv.set_property(MPVProperty.LOOP_FILE, repeat == RepeatMode.ONE)
         await self._mpv.set_property(MPVProperty.LOOP_PLAYLIST, repeat == RepeatMode.ALL)
+        
+    async def async_run_command(self, command: str, params: list[str] = None) -> None:
+        """Run an arbitrary MPV command."""
+        if params is None:
+            params = []
+        try:
+            _logger.debug(f"Running MPV command: {command} with params: {params}")
+            await self._mpv.command(command, *params)
+        except Exception as ex:
+            _logger.error(f"Failed to run MPV command {command}: {ex}")

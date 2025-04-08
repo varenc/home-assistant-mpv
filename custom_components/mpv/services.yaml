@@ -1,0 +1,24 @@
+# MPV custom services
+
+run_command:
+  name: Run command
+  description: Run an arbitrary MPV command.
+  target:
+    entity:
+      integration: mpv
+      domain: media_player
+  fields:
+    command:
+      name: Command
+      description: MPV command to run (e.g. "playlist-next", "seek", "loadfile").
+      required: true
+      example: "playlist-next"
+      selector:
+        text:
+    params:
+      name: Parameters
+      description: Optional list of parameters to pass to the command.
+      required: false
+      example: "['10', 'absolute']"
+      selector:
+        object:
