@@ -327,10 +327,11 @@ class MpvEntity(MediaPlayerEntity):
         await self._mpv.set_property(MPVProperty.LOOP_PLAYLIST, repeat == RepeatMode.ALL)
         
     async def async_run_command(self, command_string: str) -> None:
-        """Run an arbitrary MPV command.
+        """Run an arbitrary MPV command for functionality not available in standard media_player actions.
         
         The command_string is the complete command with all parameters, e.g.,
-        'set fullscreen yes', 'seek 30 absolute', or 'show-text "Hello there" 5000'.
+        'set fullscreen yes', 'add sub-scale 0.1', 'show-text "Hello" 5000',
+        or 'af add "@dynaudnorm:dynaudnorm=g=21:f=300:p=0.75:maxgain=15"'.
         Quotes are preserved for string arguments.
         """
         try:

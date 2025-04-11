@@ -41,19 +41,20 @@ service: mpv.run_command
 target:
   entity_id: media_player.mpv_player
 data:
-  command_string: "seek 10 relative"
+  command_string: "show-text \"Hello from Home Assistant\" 3000"
 ```
 
-This would seek forward 10 seconds in the currently playing media.
+This would display a text message as an on-screen overlay for 3 seconds.
 
-Example common commands:
-- `seek 30 absolute`: Navigate to the 30-second position
-- `seek 10 relative`: Skip forward 10 seconds
-- `loadfile /path/to/movie.mp4`: Play a specific file
-- `playlist-next`: Go to next item in playlist
-- `playlist-prev`: Go to previous item in playlist
+Example MPV-specific commands:
+- `show-text "Hello from Home Assistant" 3000`: Display text overlay for 3 seconds
 - `set fullscreen yes`: Enable fullscreen mode
-- `set volume 75`: Set volume to 75%
+- `add sub-scale 0.1`: Increase subtitle size
+- `cycle sub`: Cycle through available subtitles
+- `screenshot`: Take a screenshot of the current frame
+- `set video-zoom 1.2`: Zoom in on the video
+- `af add "@dynaudnorm:dynaudnorm=g=21:f=300:p=0.75:maxgain=15"`: Add dynamic audio normalization filter
+- `set speed 1.25`: Set playback speed to 1.25x
 
 For a complete list of available commands, refer to the [mpv JSON IPC documentation][mpv-ipc].
 
