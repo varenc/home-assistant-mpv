@@ -330,8 +330,10 @@ class MpvEntity(MediaPlayerEntity):
         """Run an arbitrary MPV command for functionality not available in standard media_player actions.
         
         The command_string is the complete command with all parameters, e.g.,
-        'set fullscreen yes', 'add sub-scale 0.1', 'show-text "Hello" 5000',
+        'set fullscreen yes', 'add sub-scale 0.1', 'expand-properties show-text "${media-title}" 5000',
         or 'af add "@dynaudnorm:dynaudnorm=g=21:f=300:p=0.75:maxgain=15"'.
+        
+        Use the 'expand-properties' prefix for commands that need to access MPV variables like ${media-title}.
         Quotes are preserved for string arguments.
         """
         try:

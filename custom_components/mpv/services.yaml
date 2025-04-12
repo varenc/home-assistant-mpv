@@ -10,8 +10,8 @@ run_command:
   fields:
     command_string:
       name: Command String
-      description: Complete MPV command string including parameters for MPV-specific features not available through standard media_player actions.
+      description: Complete MPV command string including parameters for MPV-specific features not available through standard media_player actions. Use 'expand-properties' prefix for accessing MPV variables like ${media-title}.
       required: true
-      example: "show-text \"Hello from Home Assistant\" 3000"
+      example: "expand-properties show-text \"You're watching: ${media-title}\" 3000"
       selector:
         text:

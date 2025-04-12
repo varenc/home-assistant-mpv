@@ -41,13 +41,13 @@ service: mpv.run_command
 target:
   entity_id: media_player.mpv_player
 data:
-  command_string: "show-text \"Hello from Home Assistant\" 3000"
+  command_string: "expand-properties show-text \"You're watching: ${media-title}\" 3000"
 ```
 
-This would display a text message as an on-screen overlay for 3 seconds.
+This would display the title of the currently playing media as an on-screen overlay for 3 seconds.
 
 Example MPV-specific commands:
-- `show-text "Hello from Home Assistant" 3000`: Display text overlay for 3 seconds
+- `expand-properties show-text "You're watching: ${media-title}" 3000`: Display media title as text overlay for 3 seconds
 - `set fullscreen yes`: Enable fullscreen mode
 - `add sub-scale 0.1`: Increase subtitle size
 - `cycle sub`: Cycle through available subtitles
